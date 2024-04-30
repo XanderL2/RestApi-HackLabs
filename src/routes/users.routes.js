@@ -1,14 +1,20 @@
 import {Router} from "express";
-import { GetUser, PostUser, PutUser, DeleteUser} from "../controllers/users.controller.js";
+import { GetAllUsers, GetUser, PostUser, PutUser, DeleteUser} from "../controllers/users.controller.js";
 
 
 const router = Router();
 
 
-router.get('/users', GetUser);
+
+router.get('/users', GetAllUsers);
+router.get('/users/:id', GetUser);
+
+
 router.post('/users', PostUser);
 router.put('/users', PutUser);
-router.delete('/users', DeleteUser);
+
+
+router.delete('/users/:id', DeleteUser);
 
 
 
