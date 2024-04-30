@@ -1,24 +1,13 @@
 import { pool } from '../dbConnection.js'
 
 
-/*
-
-    viernes 12
-    *GetAllUsers;
-    *Get Users;
-
-    !Get Users;
-    *Get Users;
-
-*/
-
 export const GetAllUsers = async (req, res) => {
 
-    let results;
+    let dbResponse;
 
     try {
 
-        results = await pool.query("SELECT * FROM Users;");  
+        dbResponse= await pool.query("SELECT * FROM Users;");  
 
     } catch (e) {
 
@@ -26,7 +15,7 @@ export const GetAllUsers = async (req, res) => {
         return res.status(500).json({"Message": "Database Error!"});
     }
 
-    return res.send(results[0])
+    return res.send(dbResponse[0])
 }
 
 
@@ -44,13 +33,12 @@ export const GetUser = async (req, res) => {
 
         if(isValidId != true) return res.status(400).json(isValidId);
 
-        const results = await pool.query("SELECT * FROM Users WHERE id = ?", [id]);
+        const dbResponse = await pool.query("SELECT * FROM Users WHERE id = ?", [id]);
 
 
+        if(dbResponse [0].length === 0) return res.status(400).json({"Message": "Empty register, id not exists"})
 
-        if(results[0].length === 0) return res.status(400).json({"Message": "Empty register, id not exists"})
-
-        return res.status(200).json(results[0]);
+        return res.status(200).json(dbResponse [0]);
 
 
     }catch(e){
@@ -82,7 +70,7 @@ export const PostUser = async (req, res) => {
 
 
 
-        const responseDB = await pool.query("INSERT INTO Users(username, passd, age) VALUES (?, ?, ?)", [username, passd, age]);
+        const responseDB= await pool.query("INSERT INTO Users(username, passd, age) VALUES (?, ?, ?)", [username, passd, age]);
 
         res.status(201).json({
             "id": responseDB[0].insertId,
@@ -103,8 +91,62 @@ export const PostUser = async (req, res) => {
 
 export const PutUser = async (req, res) => {
 
-    return res.send("Put User")
+    const {id} = req.params;
+    const {username, passd, age} = req.body; 
+
+
+    const isValidParameters =  ValidateParameters(req);
+
+    if(isValidParameters != true) return res.status(400).json(isValidParameters)
+
+
+
+    try
+    {
+        
+        const isValidateName = await ValidateUsername(username);
+        if(!(isValidateName)) return res.status(400).json({ "message": "Invalid, user already exists" });
+
+        
+        const dbResponse = await pool.query("UPDATE Users SET username = ?, passd= ?, age = ? WHERE id = ?", [username, passd, age, id]);
+        if(dbResponse[0].affectedRows === 0) return res.status(400).json({"Message": "Could not update"});
+
+
+        return res.send(dbResponse);
+        
+    }catch(e){
+
+        console.log(e)
+        return res.status(400).json({"Message": "Database Error!"})
+
+    }
+
 }
+
+export const PatchUsers= async (req, res) => {
+
+    const { change } = req.query;
+
+
+    if(change === undefined) return res.status(400).json({"Message": "Query parameter not found!"});
+
+    if(!["id", "username", "password"].includes(change)) return res.send(res.status(400).json({"Message": "Invalid parameters"}));
+    
+
+    
+
+
+
+
+
+
+
+
+
+    res.send("Patch users" + change);
+
+};
+
 
 
 export const DeleteUser = async (req, res) => {
@@ -113,8 +155,6 @@ export const DeleteUser = async (req, res) => {
     const {id} = req.params
      
     const isValidId = await ValidateID(req);
-
-
 
 
     try{
@@ -167,10 +207,11 @@ function ValidateParameters(req){
 
     if (!(username) || !(passd) || !(age)) return {"Message": "Invalid Parameter"}; 
 
-    if(!(age) || !(typeof(age) === 'number')) return {"Message": "Invalid type of age"}; 
+    if(!(age) || !(typeof(age) === 'number')) return {"Message": "Invalid age type"}; 
 
     if (age <= 14 || age > 130) return {"Message": "Invalid Age"};
 
+    if(passd.length <= 8) return {"Message": "Very short password"}
 
 
     return true;
@@ -183,7 +224,7 @@ async function ValidateUsername(username) {
 
     for (const user of usersDb[0]) {
 
-        if (user.username === username) return false;
+        if (user.username == username) return false;
     }
 
     return true;
