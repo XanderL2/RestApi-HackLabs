@@ -19,12 +19,7 @@ router.post('/users', PostUser);
 
 /* Rutas de edicion de informacion */
 router.put('/users/:id', PutUser); 
-
-
 router.patch('/users/:id/', PatchUsers);  
-
-
-
 
 
 /* Rutas de eliminacion de informacion */

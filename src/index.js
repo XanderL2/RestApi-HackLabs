@@ -11,8 +11,8 @@ app.get('/', (req, res) => {
 
 });
 
-app.use('/api/',usersRoutes);
 
+app.use('/api/',usersRoutes);
 
 
 app.listen(3000);
