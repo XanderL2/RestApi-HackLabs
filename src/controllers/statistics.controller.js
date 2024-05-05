@@ -1,4 +1,6 @@
 import { pool } from '../dbConnection.js'
+import { ValidateID } from "./users.controller.js";
+
 
 
 const serverError = {
@@ -8,13 +10,13 @@ const serverError = {
 
 export const GetStatistics= async (req, res) => {
    
-    const page = parseInt(req.query.page);
+
+    if(req.query.page){
+
+        const page = parseInt(req.query.page);
 
 
-
-    if(isNaN(page) || page <= 0) return res.status(400).json({"Message": "Invalid Query!"});
-
-    if(page){
+        if(isNaN(page) || page <= 0) return res.status(400).json({"Message": "Invalid Query!"});
 
         const results = await PaginationQuery(page, 5);
 
@@ -43,11 +45,36 @@ export const GetStatistics= async (req, res) => {
 
 export const GetStatisticsPerUser = async (req, res) => {
 
-    return res.send("Get individual")
+
+
+    const isValidUserId = await ValidateID(req);
+    if(isValidUserId != true) return res.status(400).json(isValidUserId);
+
+
+    try {
+        
+        const [results] = await pool.query(
+            "SELECT * FROM Loggin WHERE userId = ?",
+            [req.params.id]
+        );
+
+        if(results.length <= 0) return res.status(404).json({"Message": "The id does not have statistics!"});
+
+        return res.status(200).json(results);
+
+    } catch (e) {
+    
+        console.error(e);
+        return res.status(500).json(serverError);
+    }
 }
 
 
 export const PostStatistic = async (req, res) => {
+
+
+
+
 
     return res.send("Post");
 }
@@ -65,9 +92,10 @@ export const PatchStatistic = async (req, res) => {
 export const DeleteStatistic= async (req, res) => {
 
 
-    return res.send("Delete");
 
+    return res.send("Delete");
 }
+
 
 
 function CalculateOffset(page, limit){
@@ -88,7 +116,7 @@ async function PaginationQuery(page, limit = 20){
         const offset = CalculateOffset(page, limit);
 
         const [results] = await pool.query(
-            "SELECT * FROM Tools LIMIT ? OFFSET ?", 
+            "SELECT * FROM Loggin LIMIT ? OFFSET ?", 
             [limit, offset]
         );
 

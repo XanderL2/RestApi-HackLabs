@@ -237,7 +237,7 @@ export const DeleteUser = async (req, res) => {
 
 
 
-async function ValidateID(req) {
+export async function ValidateID(req) {
 
 
     const id = parseInt(req.params.id);
@@ -281,7 +281,7 @@ function ValidateParameters(req) {
 
 
 
-export async function ValidateUsername(username) {
+async function ValidateUsername(username) {
 
 
     const usersDb = await pool.query("SELECT username FROM Users");
