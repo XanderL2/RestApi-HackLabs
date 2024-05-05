@@ -14,7 +14,7 @@ router.get('/statistics/:id', GetStatisticsPerUser); //Visualizar estadisticas d
 
 
 /* Rutas de insercion de informacion */
-router.post('/statistics', PostStatistic);  //Crean nuevo registro  con id
+router.post('/statistics/:id', PostStatistic);  //Crean nuevo registro  con id
 
 
 

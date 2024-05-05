@@ -38,7 +38,7 @@ export const GetUser = async (req, res) => {
     try 
     {
 
-        const isValidId = await ValidateID(req);
+        const isValidId = await ValidateUserId(req);
         if (isValidId != true) return res.status(400).json(isValidId);
 
 
@@ -119,7 +119,7 @@ export const PutUser = async (req, res) => {
 
     try {
 
-        const isValidId = await ValidateID(req);
+        const isValidId = await ValidateUserId(req);
         if (isValidId != true) return res.status(400).json(isValidId);
 
 
@@ -170,7 +170,7 @@ export const PatchUsers = async (req, res) => {
     try 
     {
         
-        const isValidId = await ValidateID(req);
+        const isValidId = await ValidateUserId(req);
         if (isValidId != true) return res.status(400).json(isValidId);
 
 
@@ -216,7 +216,7 @@ export const DeleteUser = async (req, res) => {
 
     try {
 
-        const isValidId = await ValidateID(req);
+        const isValidId = await ValidateUserId(req);
         if (isValidId != true) return res.status(400).json(isValidId);
 
 
@@ -237,7 +237,7 @@ export const DeleteUser = async (req, res) => {
 
 
 
-export async function ValidateID(req) {
+export async function ValidateUserId(req) {
 
 
     const id = parseInt(req.params.id);

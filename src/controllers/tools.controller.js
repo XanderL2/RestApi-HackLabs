@@ -38,7 +38,7 @@ export const GetTool = async (req, res) => {
 
     try {
 
-        const isValidId = await ValidateID(id);
+        const isValidId = await ValidateToolId(id);
         if(isValidId != true) return res.status(404).json(isValidId);
 
 
@@ -121,7 +121,7 @@ export const PutTool= async (req, res) => {
 
     try {
     
-        const isValidId = await ValidateID(id);
+        const isValidId = await ValidateToolId(id);
         if(isValidId != true) return res.status(400).json(isValidId);
 
     
@@ -164,7 +164,7 @@ export const PatchTool = async (req, res) => {
 
     try {
 
-        const isValidId = await ValidateID(id);
+        const isValidId = await ValidateToolId(id);
         if(isValidId != true) return res.status(400).json(isValidId);
 
     
@@ -205,7 +205,7 @@ export const DeleteTool = async (req, res) => {
 
     try {
         
-        const isValidId = await ValidateID(id);
+        const isValidId = await ValidateToolId(id);
         if(isValidId != true) return res.status(404).json(isValidId);
 
         
@@ -282,7 +282,7 @@ async function ValidateName (name){
 
 
 
-async function ValidateID(id){
+export async function ValidateToolId(id){
 
     try{
 
