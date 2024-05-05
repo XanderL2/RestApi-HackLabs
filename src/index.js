@@ -17,7 +17,6 @@ app.get('/', (req, res) => {
 
 });
 
-
 app.use('/api/',usersRoutes);
 app.use('/api/', toolsRoutes);
 app.use('/api/', statisticsRoutes);
