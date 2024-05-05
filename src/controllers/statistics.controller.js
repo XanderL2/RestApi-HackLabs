@@ -158,8 +158,30 @@ export const PatchStatistic = async (req, res) => {
 export const DeleteStatistic = async (req, res) => {
 
 
+    const {id} = req.params;
 
-    return res.send("Delete");
+    try {
+    
+        const isValidId = await ValidateStatisticId(id);
+        if(isValidId !== true) return res.status(400).json(isValidId);
+
+
+        const [results] = await pool.query(
+            "DELETE FROM Loggin WHERE id =?",
+            [id]
+        );
+
+        if(results.affectedRows <= 0) return res.status(400).json({ "Message": "Delete failed!" });
+
+
+        return res.sendStatus(204);
+
+    } catch (e) {
+        console.error(e);        
+        return res.status(500).json(serverError);
+    }
+
+
 }
 
 
@@ -194,7 +216,6 @@ function ValidateParameters(req) {
 
 
     return true;
-
 }
 
 
