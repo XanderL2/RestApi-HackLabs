@@ -1,37 +1,32 @@
-import {Router} from "express";
-import { GetAllTools,  GetTool, PostTool, PutTool, PatchTool, DeleteTool} from "../controllers/tools.controller.js";
+import { pool } from '../dbConnection.js'
 
 
 
 
-const router = Router();
+export const GetStatistics= async (req, res) => {
+
+}
+
+
+export const GetStatisticsPerUser = async (req, res) => {
+
+}
+
+
+export const PostStatistic = async (req, res) => {
+
+}
+
+
+export const PatchStatistic = async (req, res) => {
+
+}
 
 
 
+export const DeleteStatistic= async (req, res) => {
 
-/* Rutas de Obtencion de informacion */
-router.get('/tools', GetAllTools);
-router.get('/tools/:id', GetTool);
+    
 
-
-/* Rutas de insercion de informacion */
-router.post('/tools', PostTool);
-
-
-
-/* Rutas de edicion de informacion */
-router.put('/tools/:id', PutTool); 
-router.patch('/tools/:id/', PatchTool);  
-
-
-/* Rutas de eliminacion de informacion */
-router.delete('/tools/:id', DeleteTool);
-
-
-
-
-
-
-
-export default router
+}
 

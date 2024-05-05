@@ -1,6 +1,8 @@
 import express from 'express';
+
 import usersRoutes from "./routes/users.routes.js";
 import toolsRoutes from "./routes/tools.routes.js";
+import statisticsRoutes from "./routes/statistics.routes.js";
 
 
 
@@ -18,6 +20,7 @@ app.get('/', (req, res) => {
 
 app.use('/api/',usersRoutes);
 app.use('/api/', toolsRoutes);
+app.use('/api/', statisticsRoutes);
 
 
 app.listen(3000);
