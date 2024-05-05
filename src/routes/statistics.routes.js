@@ -19,7 +19,7 @@ router.post('/statistics/:id', PostStatistic);  //Crean nuevo registro  con id
 
 
 /* Rutas de edicion de informacion */
-router.patch('/statistics/:id/', PatchStatistic);  //Actualizar parte de un registro, es decir de manera parcial
+router.patch('/statistics/', PatchStatistic);  //Actualizar parte de un registro, es decir de manera parcial
 
 
 /* Rutas de eliminacion de informacion */

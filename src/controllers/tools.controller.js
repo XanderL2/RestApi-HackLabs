@@ -236,26 +236,21 @@ function ValidateParams(req) {
 
     const {name, description} = req.body;
 
-    if(name){
 
-        const regularExpression = /^[a-zA-Z0-9_-]+$/;
+    const regularExpression = /^[a-zA-Z0-9_-]+$/;
 
-        if(!(regularExpression.test(name)) || name.length > 30) {
+    if( name !== undefined && (!(regularExpression.test(name)) || name.length > 30)) {
             
-            return {"Message": "The name does not meet the requirements"};
-
-        }
+        return {"Message": "The name does not meet the requirements"};
 
     }
 
-    if(description){
-        if(description.length > 255 || description.length < 50){
 
-            return {"Message": "The description must be between 50 and 255 characters"};
-        } 
+    if( description !== undefined &&(description.length > 255 || description.length < 50)){
 
+        return {"Message": "The description must be between 50 and 255 characters"};
+    } 
 
-    }
 
     return true; 
 }
@@ -295,7 +290,7 @@ export async function ValidateToolId(id){
             listIds.push(item.id);            
         }
 
-        if(!listIds.includes(id)) return {"Messsage": "Id does not exists"};
+        if(!listIds.includes(id)) return {"Messsage": "Tool Id does not exists"};
 
 
         return true;

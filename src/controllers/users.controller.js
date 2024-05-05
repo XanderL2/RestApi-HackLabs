@@ -237,19 +237,19 @@ export const DeleteUser = async (req, res) => {
 
 
 
-export async function ValidateUserId(req) {
+export async function ValidateUserId(req = undefined, idParam = undefined) {
 
 
-    const id = parseInt(req.params.id);
+    const id = req ? parseInt(req.params.id): idParam;
 
-    if (!(id)) return { "Message": "Not id, incorrect" };
+    if (!(id)) return { "Message": "Not user id, incorrect" };
 
 
-    if (typeof(id) != 'number') return { "Message": "Incorrect Type of id" };
+    if (typeof(id) != 'number') return { "Message": "Incorrect Type of user Id" };
 
     const usersId = await GetIds();
 
-    if(!usersId.includes(id)) return { "Message": "Id does not exist" };
+    if(!usersId.includes(id)) return { "Message": "User Id does not exist" };
 
 
     return true;
@@ -266,10 +266,12 @@ function ValidateParameters(req) {
 
     if(!(regularExpression.test(username)) || username.length <= 8) return {"Message": "Username does not meet the requirements"};
 
-    if(age){
 
-        if (!(typeof (age) === 'number')) return { "Message": "Invalid age type" };
+    if ( age !== undefined && (!(typeof (age) === 'number'))){
+        return { "Message": "Invalid age type" };
     }
+
+
 
     if (age <= 14 || age > 130) return { "Message": "Invalid Age" };
 
