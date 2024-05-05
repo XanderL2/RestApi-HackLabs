@@ -14,7 +14,7 @@ export const GetAllUsers = async (req, res) => {
 
         const [users] = await pool.query("SELECT * FROM Users;");
 
-        if (users.length === 0) return res.json({ "Message": "No data!" });
+        if (users.length === 0) return res.status(404).json({ "Message": "No data!" });
 
         return res.json(users);
 
@@ -46,6 +46,7 @@ export const GetUser = async (req, res) => {
         if (user.length === 0) return res.status(404).json({ "Message": "Empty register, id not exists" });
 
 
+
         return res.status(200).json(user);
 
     } catch (e) 
@@ -53,6 +54,7 @@ export const GetUser = async (req, res) => {
         console.error(e);
         return res.status(500).json(serverError);
     }
+
 
 }
 
@@ -139,6 +141,7 @@ export const PutUser = async (req, res) => {
             "username": username,
             "passd": passd,
             "age": age
+
         });
 
     } catch (e) {
@@ -217,7 +220,7 @@ export const DeleteUser = async (req, res) => {
         if (isValidId != true) return res.status(400).json(isValidId);
 
 
-        const results = await pool.query("DELETE FROM Users WHERE ID = ?", [id]);
+        const results = await pool.query("DELETE FROM Users WHERE id = ?;", [id]);
         if (results[0].affectedRows == 0) return res.status(400).json({ "Message": "User not found" });
 
 
@@ -227,8 +230,8 @@ export const DeleteUser = async (req, res) => {
 
         console.log(e);
         return res.status(500).json(serverError);
-
     }
+    
 
 }
 
@@ -240,6 +243,7 @@ async function ValidateID(req) {
     const id = parseInt(req.params.id);
 
     if (!(id)) return { "Message": "Not id, incorrect" };
+
 
     if (typeof(id) != 'number') return { "Message": "Incorrect Type of id" };
 
@@ -255,8 +259,12 @@ async function ValidateID(req) {
 
 function ValidateParameters(req) {
 
-    const { passd, age } = req.body;
+    const { username, passd, age } = req.body;
 
+
+    const regularExpression = /^[a-zA-Z0-9_-]+$/;
+
+    if(!(regularExpression.test(username)) || username.length <= 8) return {"Message": "Username does not meet the requirements"};
 
     if(age){
 
@@ -273,7 +281,8 @@ function ValidateParameters(req) {
 
 
 
-async function ValidateUsername(username) {
+export async function ValidateUsername(username) {
+
 
     const usersDb = await pool.query("SELECT username FROM Users");
 
@@ -281,6 +290,7 @@ async function ValidateUsername(username) {
 
         if (user.username == username) return false;
     }
+
 
     return true;
 
@@ -301,7 +311,7 @@ async function GetIds() {
             
             listIds.push(item.id);
         }
-       
+
         return listIds;
 
     } catch (e) {
