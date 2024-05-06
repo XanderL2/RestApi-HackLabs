@@ -158,7 +158,8 @@ export const PatchStatistic = async (req, res) => {
 export const DeleteStatistic = async (req, res) => {
 
 
-    const {id} = req.params;
+    const id = parseInt(req.params.id);
+
 
     try {
     

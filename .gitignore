@@ -1,2 +1,3 @@
-./eslint.config.mjs
-./node_modules/
+eslint.config.mjs
+node_modules
+.env
