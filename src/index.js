@@ -13,7 +13,7 @@ app.use(express.json());
 
 
 
-// Authenticacion
+// Authentication
 
 
 app.use('/api/', authRoutes);
@@ -35,7 +35,7 @@ app.use('/api/', statisticsRoutes);
 
 
 //404 page
-app.use((req, res, next) => {
+app.use((req, res) => {
 
     return res.status(404).json(
         {"Message": "Endpoint not found"}
