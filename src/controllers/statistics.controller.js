@@ -9,31 +9,38 @@ const serverError = {
 };
 
 
+
 export const GetStatistics = async (req, res) => {
-
-
-    if (req.query.page) {
-
-        const page = parseInt(req.query.page);
-
-
-        if (isNaN(page) || page <= 0) return res.status(400).json({ "Message": "Invalid Query!" });
-
-        const results = await PaginationQuery(page, 5);
-
-        if (results.length <= 0) return res.status(404).json({ "Message": "No data!" });
-
-        return res.json(results);
-    }
 
 
     try {
 
+        if (req.query.page) {
+
+            const page = parseInt(req.query.page);
+
+
+            if (isNaN(page) || page <= 0) return res.status(400).json({ "Message": "Invalid Query!" });
+
+            const results = await PaginationQuery(page, 5);
+
+            if (results.length <= 0) return res.status(404).json({ "Message": "No data!" });
+
+            return res.json(results);
+
+        }
+
+
+
         const [results] = await pool.query("SELECT * FROM Loggin");
+
 
         if (results.length <= 0) return res.status(404).json({ "Message": "No data!" });
 
+        
         return res.status(200).json(results);
+
+
 
     } catch (e) {
 
@@ -75,7 +82,6 @@ export const PostStatistic = async (req, res) => {
 
     const { id } = req.params;
 
-    console.log(id)
 
     try {
 
@@ -115,26 +121,25 @@ export const PatchStatistic = async (req, res) => {
     const { id, userId, machine, attempt, loss, toolId } = req.body;
 
 
-    const isValidParameters = ValidateParameters(req);
+    const isValidBody = ValidateReqBody(req);
 
-    if (isValidParameters != true) return res.status(400).json(isValidParameters);
+    if (isValidBody != true) return res.status(400).json(isValidBody );
 
 
 
     try {
 
 
-        const isValidStatisticId = await ValidateStatisticId(id);
-        if (isValidStatisticId != true) return res.status(400).json(isValidStatisticId);
+        const isValidRegister = await ValidateLogginRegister(id, userId);
+        if (isValidRegister != true) return res.status(400).json(isValidRegister);
 
 
         const isValidUserId = await ValidateUserId(undefined, userId);
         if (isValidUserId != true) return res.status(400).json(isValidUserId);
 
-    
+   
         const isValidToolId = await ValidateToolId(toolId);
-        if (toolId !== undefined && (isValidToolId != true)) return res.status(400).json(isValidToolId);
-
+        if (toolId !== undefined && isValidToolId != true) return res.status(400).json(isValidToolId);
 
 
         const [results] = await pool.query(
@@ -142,7 +147,8 @@ export const PatchStatistic = async (req, res) => {
             [machine, attempt, loss, toolId, id]
         );
 
-        if(results.affectedRows <= 0) return res.status("Update failed, no changes made");
+
+        if(results.affectedRows <= 0) return res.status(500).json({"Message": "Update failed, no changes made"});
 
         return res.status(200).json(results);
 
@@ -186,15 +192,16 @@ export const DeleteStatistic = async (req, res) => {
 }
 
 
-function ValidateParameters(req) {
+function ValidateReqBody(req) {
 
     const { id, userId, machine, attempt, loss, toolId } = req.body;
+
 
     if (!id || !userId) {
         return { "Message": "The id and userId fields are required" };
     }
 
-    if (isNaN(parseInt(toolId))) {
+    if (toolId !== undefined && (isNaN(parseInt(toolId)))){
         return { "Message": "Incorrect Tool Id Data Type!" };
     }
 
@@ -215,44 +222,31 @@ function ValidateParameters(req) {
     }
 
 
-
     return true;
+}
+
+
+
+async function ValidateLogginRegister(id, userId){
+
+    const [results] = await pool.query(
+        "SELECT id, userId FROM Loggin WHERE id = ? && userId = ?",
+        [id, userId]
+    );
+
+
+    return results.length <= 0 ? { "Messsage": "The statistics ID does not exist or does not match the user id" } : true;
+
 }
 
 
 async function ValidateStatisticId(id) {
 
-    try {
+    const [results] = await pool.query("SELECT id FROM Loggin WHERE id = ?",[id]);
 
-        let listIds = [];
-
-        const [ids] = await pool.query("SELECT id FROM Loggin");
-
-
-        for (const item of ids) {
-            listIds.push(item.id);
-        }
-
-        if (!listIds.includes(id)) return { "Messsage": "Statistic Id does not exists" };
-
-
-        return true;
-
-    } catch (e) {
-
-        console.error(e);
-        return { serverError }
-    }
-
-
+    return results.length <= 0 ? { "Messsage": "Statistic Id does not exists" } : true;
 
 }
-
-
-
-
-
-
 
 
 function CalculateOffset(page, limit) {
@@ -278,7 +272,7 @@ async function PaginationQuery(page, limit = 20) {
         );
 
 
-        return results
+        return results;
 
     } catch (e) {
 

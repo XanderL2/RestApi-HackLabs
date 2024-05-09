@@ -1,7 +1,4 @@
 import { pool } from '../dbConnection.js'
-import { EncryptPassword } from "./auth.controller.js";
-
-
 
 
 
@@ -70,9 +67,7 @@ export const PostUser = async (req, res) => {
     const { username, passd, age} = req.body;
 
 
-
     if (!(username) || !(passd) || !(age)) return res.status(400).json({ "Message": "Parameters are missing" });
-
 
 
     const isValidParameters = ValidateParameters(req);
@@ -87,14 +82,10 @@ export const PostUser = async (req, res) => {
         if (!(isValidateName)) return res.status(400).json({ "Message": "Invalid, username already exists" });
 
 
-        const encriptedPassd = await EncryptPassword(passd)
-
-
         const responseDB = await pool.query(
             "INSERT INTO Users(username, passd, age) VALUES (?, ?, ?)", 
-            [username, encriptedPassd, age]
+            [username, passd, age]
         );
-
 
 
         res.status(201).json({
@@ -112,10 +103,6 @@ export const PostUser = async (req, res) => {
     }
 
 }
-
-
-
-
 
 export const PutUser = async (req, res) => {
 
@@ -141,13 +128,9 @@ export const PutUser = async (req, res) => {
         if (!(isValidateName)) return res.status(400).json({ "Message": "Invalid, username already exists" });
 
 
-
-
-        const encriptedPassd = await EncryptPassword(passd)
-
         const dbResponse = await pool.query(
             "UPDATE Users SET username = ?, passd= ?, age = ? WHERE id = ?", 
-            [username, encriptedPassd, age, id]
+            [username, passd, age, id]
         );
 
         if (dbResponse[0].affectedRows === 0) return res.status(400).json({ "Message": "Update failed, no changes made" });
@@ -171,7 +154,6 @@ export const PutUser = async (req, res) => {
 
 }
 
-
 export const PatchUsers = async (req, res) => {
 
 
@@ -182,6 +164,7 @@ export const PatchUsers = async (req, res) => {
 
     const isValidParameters = ValidateParameters(req);
     if (isValidParameters != true) return res.status(400).json(isValidParameters)
+
 
 
 
@@ -197,14 +180,9 @@ export const PatchUsers = async (req, res) => {
 
 
 
-
-        const encriptedPassd = passd === undefined ? undefined : await EncryptPassword(passd)
-
-
-
         const dbResponse = await pool.query(
             "UPDATE Users SET username = IFNULL(?, username), passd = IFNULL(?, passd), age = IFNULL(?, age) WHERE id = ?;", 
-            [username, encriptedPassd, age, id]
+            [username, passd, age, id]
         );
 
 
@@ -228,9 +206,6 @@ export const PatchUsers = async (req, res) => {
     }
 
 };
-
-
-
 
 
 
@@ -263,39 +238,24 @@ export const DeleteUser = async (req, res) => {
 
 
 
-
-
-
-
-
-
-async function ValidateUsername(username) {
-
-    const [usersDb] = await pool.query("SELECT username FROM Users WHERE username = ?", [username]);
-
-    return usersDb.length > 0 ? false : true;
-
-}
-
-
 export async function ValidateUserId(req = undefined, idParam = undefined) {
+
 
     const id = req ? parseInt(req.params.id): idParam;
 
-
-    if(id === undefined) return { "Message": "Not user id or incorrect" };
-
-    if (isNaN(id)) return { "Message": "Incorrect Type of user Id" };
+    if (!(id)) return { "Message": "Not user id, incorrect" };
 
 
+    if (typeof(id) != 'number') return { "Message": "Incorrect Type of user Id" };
 
-    const [results] = await pool.query("SELECT id FROM Users WHERE id = ?", [id]);
+    const usersId = await GetIds();
+
+    if(!usersId.includes(id)) return { "Message": "User Id does not exist" };
 
 
-    return results.length <= 0 ? { "Message": "User Id does not exist" } : true;
+    return true;
 
 }
-
 
 
 function ValidateParameters(req) {
@@ -305,24 +265,57 @@ function ValidateParameters(req) {
 
     const regularExpression = /^[a-zA-Z0-9_-]+$/;
 
-    if(username != undefined )
-    
-
-    if( username === undefined || !(regularExpression.test(username)) || username.length <= 6 || username.length >= 100){
-
-        return {"Message": "Username does not meet the requirements"};
-    } 
+    if(!(regularExpression.test(username)) || username.length <= 8) return {"Message": "Username does not meet the requirements"};
 
 
-    if ( age !== undefined && (isNaN(parseInt(age)))){
+    if ( age !== undefined && (!(typeof (age) === 'number'))){
         return { "Message": "Invalid age type" };
     }
 
 
+
     if (age <= 14 || age > 130) return { "Message": "Invalid Age" };
 
+    if (passd.length <= 8) return { "Message": "Very short password" }
 
-    return passd !== undefined && passd.length <= 8 ? { "Message": "Very short password" } : true;
+
+    return true;
+}
+
+
+
+async function ValidateUsername(username) {
+
+
+    const usersDb = await pool.query("SELECT username FROM Users WHERE username = ?", [username]);
+
+
+    return usersDb.length > 0 ? false : true;
+
+}
+
+
+async function GetIds() {
+
+
+    try {
+
+        const [ids] = await pool.query("SELECT id FROM Users;");
+
+        let listIds = [];
+
+
+        for (const item of ids) {
+            
+            listIds.push(item.id);
+        }
+
+        return listIds;
+
+    } catch (e) {
+
+        return e;
+    }
 
 }
 

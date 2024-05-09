@@ -3,6 +3,8 @@ import express from 'express';
 import usersRoutes from "./routes/users.routes.js";
 import toolsRoutes from "./routes/tools.routes.js";
 import statisticsRoutes from "./routes/statistics.routes.js";
+import authRoutes from "./routes/auth.routes.js";
+
 
 import { PORT } from "./configs.js";
 
@@ -11,13 +13,29 @@ app.use(express.json());
 
 
 
-app.use('/api/',usersRoutes);
+// Authenticacion
+
+
+app.use('/api/', authRoutes);
+
+
+
+
+
+
+
+
+// App routes
+app.use('/api/', usersRoutes);
 app.use('/api/', toolsRoutes);
 app.use('/api/', statisticsRoutes);
 
 
-app.use((req, res, next) => {
 
+
+
+//404 page
+app.use((req, res, next) => {
 
     return res.status(404).json(
         {"Message": "Endpoint not found"}

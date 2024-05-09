@@ -13,13 +13,13 @@ router.get('/users/:id', GetUser);
 
 
 /* Rutas de insercion de informacion */
-router.post('/users', PostUser);
+router.post('/register', PostUser);
 
 
 
 /* Rutas de edicion de informacion */
 router.put('/users/:id', PutUser); 
-router.patch('/users/', PatchUsers);  
+router.patch('/users/:id', PatchUsers);  
 
 
 /* Rutas de eliminacion de informacion */

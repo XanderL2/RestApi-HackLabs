@@ -28,6 +28,7 @@ export const GetAllTools = async (req, res) => {
 
 };
 
+
 export const GetTool = async (req, res) => {
 
     const id = parseInt(req.params.id);
@@ -56,6 +57,12 @@ export const GetTool = async (req, res) => {
     }
 
 };
+
+
+
+
+
+
 
 export const PostTool = async (req, res) => {
 
@@ -98,6 +105,10 @@ export const PostTool = async (req, res) => {
 
 
 };
+
+
+
+
 
 export const PutTool= async (req, res) => {
 
@@ -239,6 +250,7 @@ function ValidateParams(req) {
 
     const regularExpression = /^[a-zA-Z0-9_-]+$/;
 
+
     if( name !== undefined && (!(regularExpression.test(name)) || name.length > 30)) {
             
         return {"Message": "The name does not meet the requirements"};
@@ -258,50 +270,21 @@ function ValidateParams(req) {
 
 async function ValidateName (name){
 
-    const [result] = await pool.query("SELECT name FROM Tools");
+    const [result] = await pool.query("SELECT name FROM Tools WHERE id = ?", [name]);
 
-
-
-
-    for (const item of result) {
-        
-        if(item.name === name){
-            return false;
-        } 
-    }
-
-    
-    return true;
+    return result.length > 0 ? false : true;
 }
-
-
-
 
 export async function ValidateToolId(id){
 
-    try{
 
-        let listIds = [];
+    const [results] = await pool.query("SELECT id FROM Tools WHERE id = ?", [id]);
 
-        const [ids] = await pool.query("SELECT id FROM Tools");
-        
-
-        for (const item of ids) {
-            listIds.push(item.id);            
-        }
-
-        if(!listIds.includes(id)) return {"Messsage": "Tool Id does not exists"};
-
-
-        return true;
-
-    }catch(e){
-
-        console.error(e);
-        return {serverError}
-    }
-
+    return results.length <= 0 ? {"Messsage": "Tool Id does not exists"} : true
 }
+
+
+
 
 
 

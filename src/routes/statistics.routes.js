@@ -13,6 +13,7 @@ router.get('/statistics', GetStatistics); //Visualizar estadisticas generales  c
 router.get('/statistics/:id', GetStatisticsPerUser); //Visualizar estadisticas de un id en concreto
 
 
+
 /* Rutas de insercion de informacion */
 router.post('/statistics/:id', PostStatistic);  //Crean nuevo registro  con id
 
