@@ -28,7 +28,7 @@ const PASSWORD_INCORRECT = {
 export const AuthUser = async (req, res) => {
 
 
-    const { username, password, type } = req.body;
+    const { username, password} = req.body;
 
 
     if (username === undefined || password === undefined) {
@@ -98,7 +98,7 @@ export async function EncryptPassword(password) {
 
 
 
-const ChechAuth = (req, res, next) => {
+export const ChechAuth = (req, res, next) => {
 
 
     const token = req.headers['x-access-token'];
@@ -108,18 +108,18 @@ const ChechAuth = (req, res, next) => {
     }
 
 
+
     try {
 
 
         const payload = jwt.verify(token, SECRET); 
 
-		req.user = payload; 
+		req.payload= payload; 
 		
         next(); 
 
     } catch (error) {
 
-		//Cuando el token no es valido lanza una excepcion, asi que debemos usar un try - catch
         console.error(error);
         return res.status(401).json({ "Message": "Incorrect or Expired Token" });
     }
