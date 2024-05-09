@@ -203,7 +203,6 @@ export const PatchTool = async (req, res) => {
         return res.status(500).json(serverError);
 
     }
-  
 
 };
 
@@ -282,9 +281,3 @@ export async function ValidateToolId(id){
 
     return results.length <= 0 ? {"Messsage": "Tool Id does not exists"} : true
 }
-
-
-
-
-
-

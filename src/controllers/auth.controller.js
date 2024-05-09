@@ -25,6 +25,7 @@ const PASSWORD_INCORRECT = {
 
 
 
+
 export const AuthUser = async (req, res) => {
 
 
@@ -50,7 +51,7 @@ export const AuthUser = async (req, res) => {
 
         
         const token = jwt.sign(
-            {id: userDB.id, role: "user"}, 
+            {id: userDB.id, role: userDB.role}, 
             SECRET, 
             {expiresIn: 60 * 60 * 5}
         );
@@ -71,7 +72,6 @@ export const AuthUser = async (req, res) => {
         return res.status(500).json(UNAUTHORIZED)
         
     }
-
 };
 
 
@@ -129,10 +129,27 @@ export const ChechAuth = (req, res, next) => {
 
 
 
+
+export const CheckRole = (requiredRole) => (req, res, next) => {
+
+    const role = req.payload.role;
+
+    if(role != requiredRole){
+        return res.status(401).json(UNAUTHORIZED);
+    }
+
+    next();
+};
+
+
+
+
+
+
 async function GetUserCredentials(username) {
 
     const [user] = await pool.query(
-        'SELECT id, username, passd FROM Users WHERE username = ?',
+        'SELECT id, username, passd, role FROM Users WHERE username = ?',
         [username]
     );
 
@@ -146,7 +163,7 @@ async function GetUserCredentials(username) {
 
 
 
-async function CompareHashes(passwordPlainText, hash){
+export async function CompareHashes(passwordPlainText, hash){
 
     try {
         
@@ -159,45 +176,3 @@ async function CompareHashes(passwordPlainText, hash){
         return "Not compare" + error;
     }
 };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/*
-
-    *1. Crear registro /register:
-
-        - Usar bcrypt para encriptar esas contraseñas
-        
-
-    *2. Realizar una autenticacion /signin:
-
-    *3. Crear un token.
-
-    *4. Crear un middleware en el que el usuario solo pueda avanzar si esta autorizado con el token
-
-
-
-*/
-

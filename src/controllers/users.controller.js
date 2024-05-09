@@ -119,7 +119,7 @@ export const PostUser = async (req, res) => {
 
 export const PutUser = async (req, res) => {
 
-    const { id } = req.payload.id;
+    const id = req.payload.id;
     const { username, passd, age } = req.body;
 
     if (!(username) || !(passd) || !(age)) return res.status(400).json({ "Message": "Parameters are missing" });
@@ -133,7 +133,7 @@ export const PutUser = async (req, res) => {
 
     try {
 
-        const isValidId = await ValidateUserId(req);
+        const isValidId = await ValidateUserId(undefined, id);
         if (isValidId != true) return res.status(400).json(isValidId);
 
 
@@ -178,8 +178,8 @@ export const PatchUsers = async (req, res) => {
     const id = req.payload.id;
     const { username, passd, age} = req.body;
 
+    
 
-    console.log(id)
 
     const isValidParameters = ValidateParameters(req);
     if (isValidParameters != true) return res.status(400).json(isValidParameters)
@@ -189,7 +189,7 @@ export const PatchUsers = async (req, res) => {
     try 
     {
         
-        const isValidId = await ValidateUserId(req);
+        const isValidId = await ValidateUserId(undefined, id);
         if (isValidId != true) return res.status(400).json(isValidId);
 
 
@@ -238,12 +238,12 @@ export const PatchUsers = async (req, res) => {
 export const DeleteUser = async (req, res) => {
 
 
-    const { id } = req.payload.id;
+    const id = req.payload.id;
 
 
     try {
 
-        const isValidId = await ValidateUserId(req);
+        const isValidId = await ValidateUserId(undefined, id);
         if (isValidId != true) return res.status(400).json(isValidId);
 
 
@@ -267,9 +267,6 @@ export const DeleteUser = async (req, res) => {
 
 
 
-
-
-
 async function ValidateUsername(username) {
 
     const [usersDb] = await pool.query("SELECT username FROM Users WHERE username = ?", [username]);
@@ -281,7 +278,9 @@ async function ValidateUsername(username) {
 
 export async function ValidateUserId(req = undefined, idParam = undefined) {
 
-    const id = req ? parseInt(req.payload.id): idParam;
+
+    const id = req ? parseInt(req.params.id): idParam;
+
 
 
     if(id === undefined) return { "Message": "Not user id or incorrect" };

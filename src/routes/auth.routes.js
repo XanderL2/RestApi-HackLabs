@@ -7,6 +7,7 @@ import { AuthUser } from "../controllers/auth.controller.js";
 const router = Router();
 
 
+//*Publicas
 router.post('/login/', AuthUser);  
 
 
@@ -19,4 +20,3 @@ router.post('/login/', AuthUser);
 
 
 export default router
-

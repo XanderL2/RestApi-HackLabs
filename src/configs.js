@@ -16,4 +16,5 @@ export const DB_USER = process.env.DB_USER || 'dev';
 export const DB_PASSWORD = process.env.DB_PASSWORD  || 'developerBackend6969';
 export const DB_DATABASE = process.env.DB_DATABASE || 'hackLabs';
 export const SECRET = process.env.SECRET;
+export const SECRET_ADMIN = process.env.SECRET_ADMIN;
 
