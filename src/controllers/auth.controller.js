@@ -56,7 +56,13 @@ export const AuthUser = async (req, res) => {
             {expiresIn: 60 * 60 * 5}
         );
 
+        
+        console.log(`UPDATE Users SET state = true WHERE id = ${userDB.id};`) 
 
+
+        
+        await pool.query("UPDATE Users SET state = true WHERE id = ?;", [userDB.id]);
+        
 
 
         return res.status(202).json({

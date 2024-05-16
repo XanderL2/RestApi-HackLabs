@@ -17,8 +17,7 @@ router.get('/statistics/:id', GetStatisticsPerUser);
 
 
 //! Privadas
-router.post('/statistics/:id', ChechAuth, CheckRole('user'), PostStatistic);  
-
+router.post('/statistics/:id', ChechAuth, CheckRole('admin'), PostStatistic);  
 router.patch('/statistics/', ChechAuth, CheckRole('admin'), PatchStatistic);  
 router.delete('/statistics/:id', ChechAuth, CheckRole('admin'), DeleteStatistic); 
 

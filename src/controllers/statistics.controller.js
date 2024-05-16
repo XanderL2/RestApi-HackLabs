@@ -95,6 +95,7 @@ export const PostStatistic = async (req, res) => {
             [id]
         );
 
+
         if (results.length <= 0) return res.status(404).json({ "Message": "Could not create statistics" });
 
         return res.status(201).json({

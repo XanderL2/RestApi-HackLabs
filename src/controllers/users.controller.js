@@ -16,7 +16,7 @@ export const GetAllUsers = async (req, res) => {
     try 
     {
 
-        const [users] = await pool.query("SELECT id, username, age FROM Users;");
+        const [users] = await pool.query("SELECT id, username, age, state FROM Users;");
 
         if (users.length === 0) return res.status(404).json({ "Message": "No data!" });
 
