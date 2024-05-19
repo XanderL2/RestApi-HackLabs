@@ -46,7 +46,9 @@ export const AuthUser = async (req, res) => {
 
 
         const isEqualHash = await CompareHashes(password, userDB.passd);
-        if(isEqualHash === false) return res.status(401).json(PASSWORD_INCORRECT ); 
+        if(isEqualHash === false) return res.status(401).json(PASSWORD_INCORRECT); 
+
+
 
 
         
@@ -55,9 +57,6 @@ export const AuthUser = async (req, res) => {
             SECRET, 
             {expiresIn: 60 * 60 * 5}
         );
-
-        
-        console.log(`UPDATE Users SET state = true WHERE id = ${userDB.id};`) 
 
 
         
@@ -127,7 +126,7 @@ export const ChechAuth = (req, res, next) => {
     } catch (error) {
 
         console.error(error);
-        return res.status(401).json({ "Message": "Incorrect or Expired Token" });
+        return res.status(401).json({ "Message": "Incorrect or Expired Token! Log in again" });
     }
 
 };
@@ -139,6 +138,8 @@ export const ChechAuth = (req, res, next) => {
 export const CheckRole = (requiredRole) => (req, res, next) => {
 
     const role = req.payload.role;
+
+
 
     if(role != requiredRole){
         return res.status(401).json(UNAUTHORIZED);

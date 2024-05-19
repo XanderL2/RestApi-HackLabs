@@ -16,7 +16,7 @@ export const GetAllUsers = async (req, res) => {
     try 
     {
 
-        const [users] = await pool.query("SELECT id, username, age, state FROM Users;");
+        const [users] = await pool.query("SELECT id, username, age, state, createdAt FROM Users;");
 
         if (users.length === 0) return res.status(404).json({ "Message": "No data!" });
 
@@ -46,7 +46,7 @@ export const GetUser = async (req, res) => {
         if (isValidId != true) return res.status(400).json(isValidId);
 
 
-        const [user] = await pool.query("SELECT id, username, age FROM Users WHERE id = ?", [id]);
+        const [user] = await pool.query("SELECT id, username, age, state, createdAt FROM Users WHERE id = ?", [id]);
         if (user.length === 0) return res.status(404).json({ "Message": "Empty register, id not exists" });
 
 
