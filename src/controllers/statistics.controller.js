@@ -80,19 +80,23 @@ export const GetStatisticsPerUser = async (req, res) => {
 
 export const PostStatistic = async (req, res) => {
 
-    const { id } = req.params;
+    const { id } = req.payload;
+    const {machine, attempt, loss, toolId } = req.body;
 
 
     try {
 
-
-        const isValidUserId = await ValidateUserId(req);
+        const isValidUserId = await ValidateUserId(undefined, id);
         if (isValidUserId != true) return res.status(400).json(isValidUserId);
+
+        const isValidToolId = await ValidateToolId(toolId);
+        if (toolId !== undefined && isValidToolId != true) return res.status(400).json(isValidToolId);
+
 
 
         const [results] = await pool.query(
-            "INSERT INTO Loggin (userId, toolId) VALUES (?, 1)",
-            [id]
+            "INSERT INTO Loggin (userId, machine, attempt, loss, toolId) VALUES (?, ?, ?, ?, ?)",
+            [id, machine, attempt, loss, toolId]
         );
 
 
@@ -102,9 +106,10 @@ export const PostStatistic = async (req, res) => {
 
             "id": results.insertId,
             "userId": id,
-            "machine": 0,
-            "attempt": 0,
-            "loss": 0
+            // "machine": 0,
+            // "attempt": 0,
+            // "loss": 0
+
         });
 
     } catch (e) {
